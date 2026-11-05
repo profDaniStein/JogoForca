@@ -2,10 +2,15 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.25">
   <title>Forca — JogaMente</title>
   <style>
-    /* CAMADA 2: ESTILO — só aparência, nenhuma regra do jogo */
+    /*
+      CAMADA 2: ESTILO
+      Aqui ficam apenas regras visuais da página.
+      O JavaScript da lógica não deve mexer em estilos diretamente,
+      apenas alterar textos, habilitar/desabilitar botões e atualizar a interface.
+    */
     body { font-family: Arial, sans-serif; text-align: center; margin: 2rem; }
     #palavra { font-size: 2rem; letter-spacing: .4rem; margin: 1rem; }
     #teclado button { margin: 2px; padding: .5rem .7rem; }
@@ -13,7 +18,11 @@
   </style>
 </head>
 <body>
-  <!-- CAMADA 1: ESTRUTURA — o que existe na página -->
+  <!--
+    CAMADA 1: ESTRUTURA
+    Esta parte define os elementos visíveis na tela.
+    Em um projeto real, esses elementos funcionam como o "esqueleto" da página.
+  -->
   <main>
     <h1>Jogo da Forca</h1>
     <p id="palavra"></p>
@@ -24,83 +33,132 @@
   </main>
  
   <script>
-    // ===== CAMADA 3 (lógica) · parte A: DADOS =====
+    /*
+      CAMADA 3: LÓGICA DO JOGO
+      Esta seção controla a regra do jogo sem depender da tela.
+      O objetivo é separar dados, regras e interface para manter o código mais fácil de entender.
+    */
+
+    // ===== Parte A: DADOS =====
+    // Lista de palavras possíveis. Cada item é uma palavra do jogo, em letras maiúsculas.
     const PALAVRAS = ['OPORTUNIDADE', 'DESCONTO', 'RECOMPENSA', 'PONTUACAO', 'DESAFIO'];
+
+    // Número máximo de erros antes do jogador perder.
     const MAX_ERROS = 6;
  
-    // ===== CAMADA 3 (lógica) · parte B: ESTADO — a "memória" da partida =====
+    // ===== Parte B: ESTADO =====
+    // A variável estado guarda o momento atual da partida.
+    // Ela funciona como a "memória" do jogo: qual palavra foi sorteada, quais letras foram tentadas e quantos erros ocorreram.
     let estado;
  
     function novoEstado() {
-      // Sorteia uma palavra. Math.random() gera de 0 a 1; multiplicando pelo tamanho da lista e arredondando para baixo, obtemos um índice válido.
+      // Math.random() gera um número entre 0 e 1.
+      // Multiplicando por PALAVRAS.length e usando Math.floor(), escolhemos um índice válido da lista.
       const palavra = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
+
+      // Retorna o estado inicial de uma nova partida.
       return { palavra: palavra, letras: [], erros: 0 };
     }
  
-    // ===== CAMADA 3 (lógica) · parte C: REGRAS — funções puras (recebem o estado, devolvem o novo, não mexem na tela) =====
+    // ===== Parte C: REGRAS DO JOGO =====
+    // Funções puras: recebem um estado e retornam um novo estado.
+    // Elas não mexem diretamente no HTML; apenas calculam regras do jogo.
     function processarLetra(est, letra) {
-      if (est.letras.includes(letra)) return est;          // letra repetida: nada muda
-      const errou = !est.palavra.includes(letra);          // a letra não existe na palavra?
+      // Se a letra já foi escolhida antes, a jogada é ignorada.
+      if (est.letras.includes(letra)) return est;
+
+      // Verifica se a letra existe na palavra secreta.
+      const errou = !est.palavra.includes(letra);
+
       return {
         palavra: est.palavra,
-        letras: [...est.letras, letra],                    // cópia da lista + a nova letra (sem alterar a original)
-        erros: est.erros + (errou ? 1 : 0)                 // soma 1 erro só se errou
+        letras: [...est.letras, letra], // Cria uma nova lista com a letra adicionada.
+        erros: est.erros + (errou ? 1 : 0) // Soma 1 apenas quando a tentativa for errada.
       };
     }
  
     function mascara(est) {
-      // Letra já tentada aparece; as outras viram "_". Ex.: D _ S _ O _ T O
+      // Cria a palavra em formato visível para o usuário.
+      // Cada letra da palavra secreta é exibida se já tiver sido acertada; caso contrário, aparece "_".
+      // Exemplo: D _ S _ O _ T O
       return [...est.palavra].map(c => est.letras.includes(c) ? c : '_').join(' ');
     }
  
+    // Retorna true se todas as letras da palavra foram descobertas.
     function venceu(est) { return [...est.palavra].every(c => est.letras.includes(c)); }
+
+    // Retorna true se o jogador atingiu o limite de erros.
     function perdeu(est) { return est.erros >= MAX_ERROS; }
  
-    // ===== CAMADA 4: TELA (DOM) — a única parte que toca na página =====
+    // ===== CAMADA 4: TELA (DOM) =====
+    // Esta parte lê e altera o conteúdo da página HTML.
+    // Ela serve como ponte entre a lógica do jogo e o que o usuário vê.
     function desenhar() {
+      // Atualiza a palavra oculta na tela.
       document.getElementById('palavra').textContent = mascara(estado);
+
+      // Atualiza o contador de erros e o máximo permitido.
       document.getElementById('erros').textContent = estado.erros;
       document.getElementById('max').textContent = MAX_ERROS;
  
+      // Verifica se o jogo terminou.
       const fim = venceu(estado) || perdeu(estado);
       const msg = document.getElementById('mensagem');
+
+      // Exibe uma mensagem final conforme o resultado.
       if (venceu(estado)) {
         msg.textContent = 'Você venceu!';
-        // Encontro 15: é AQUI que o app vai avisar "vitória" para somar pontos.
+        // Ponto de extensão: aqui seria o lugar ideal para somar pontos, salvar score ou exibir banner especial.
       } else if (perdeu(estado)) {
         msg.textContent = 'Perdeu. A palavra era ' + estado.palavra;
       } else {
         msg.textContent = '';
       }
  
-      // Desabilita a tecla já usada e todas, se o jogo acabou.
+      // Desabilita letras já usadas e também todas as teclas quando o jogo termina.
       document.querySelectorAll('#teclado button').forEach(b => {
         b.disabled = fim || estado.letras.includes(b.textContent);
       });
     }
  
     function criarTeclado() {
+      // Busca o container que vai receber os botões do teclado.
       const teclado = document.getElementById('teclado');
+
+      // Remove qualquer conteúdo antigo antes de criar um novo teclado.
       teclado.replaceChildren();
+
+      // Cria um botão para cada letra do alfabeto.
       for (const l of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
         const b = document.createElement('button');
         b.type = 'button';
         b.textContent = l;
+
+        // Ao clicar, o jogo processa a letra e redesenha a tela.
         b.addEventListener('click', () => {
-          estado = processarLetra(estado, l);              // 1) regra calcula o novo estado
-          desenhar();                                      // 2) tela se atualiza a partir do estado
+          estado = processarLetra(estado, l); // 1) calcula o novo estado
+          desenhar(); // 2) atualiza o que aparece na página
         });
+
         teclado.append(b);
       }
     }
  
     function iniciar() {
+      // Reinicia o estado do jogo.
       estado = novoEstado();
+
+      // Recria o teclado para garantir uma nova partida limpa.
       criarTeclado();
+
+      // Atualiza a tela com os valores iniciais.
       desenhar();
     }
  
+    // Botão "Novo jogo" reinicia a partida.
     document.getElementById('novo').addEventListener('click', iniciar);
+
+    // Inicia o jogo ao carregar a página.
     iniciar();
   </script>
 </body>
