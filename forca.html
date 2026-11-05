@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forca — JogaMente</title>
+  <style>
+    /* CAMADA 2: ESTILO — só aparência, nenhuma regra do jogo */
+    body { font-family: Arial, sans-serif; text-align: center; margin: 2rem; }
+    #palavra { font-size: 2rem; letter-spacing: .4rem; margin: 1rem; }
+    #teclado button { margin: 2px; padding: .5rem .7rem; }
+    #teclado button:disabled { opacity: .4; }
+  </style>
+</head>
+<body>
+  <!-- CAMADA 1: ESTRUTURA — o que existe na página -->
+  <main>
+    <h1>Jogo da Forca</h1>
+    <p id="palavra"></p>
+    <p>Erros: <span id="erros">0</span> / <span id="max"></span></p>
+    <p id="mensagem" role="status"></p>
+    <div id="teclado"></div>
+    <button id="novo" type="button">Novo jogo</button>
+  </main>
+ 
+  <script>
+    // ===== CAMADA 3 (lógica) · parte A: DADOS =====
+    const PALAVRAS = ['OPORTUNIDADE', 'DESCONTO', 'RECOMPENSA', 'PONTUACAO', 'DESAFIO'];
+    const MAX_ERROS = 6;
+ 
+    // ===== CAMADA 3 (lógica) · parte B: ESTADO — a "memória" da partida =====
+    let estado;
+ 
+    function novoEstado() {
+      // Sorteia uma palavra. Math.random() gera de 0 a 1; multiplicando pelo tamanho da lista e arredondando para baixo, obtemos um índice válido.
+      const palavra = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
+      return { palavra: palavra, letras: [], erros: 0 };
+    }
+ 
+    // ===== CAMADA 3 (lógica) · parte C: REGRAS — funções puras (recebem o estado, devolvem o novo, não mexem na tela) =====
+    function processarLetra(est, letra) {
+      if (est.letras.includes(letra)) return est;          // letra repetida: nada muda
+      const errou = !est.palavra.includes(letra);          // a letra não existe na palavra?
+      return {
+        palavra: est.palavra,
+        letras: [...est.letras, letra],                    // cópia da lista + a nova letra (sem alterar a original)
+        erros: est.erros + (errou ? 1 : 0)                 // soma 1 erro só se errou
+      };
+    }
+ 
+    function mascara(est) {
+      // Letra já tentada aparece; as outras viram "_". Ex.: D _ S _ O _ T O
+      return [...est.palavra].map(c => est.letras.includes(c) ? c : '_').join(' ');
+    }
+ 
+    function venceu(est) { return [...est.palavra].every(c => est.letras.includes(c)); }
+    function perdeu(est) { return est.erros >= MAX_ERROS; }
+ 
+    // ===== CAMADA 4: TELA (DOM) — a única parte que toca na página =====
+    function desenhar() {
+      document.getElementById('palavra').textContent = mascara(estado);
+      document.getElementById('erros').textContent = estado.erros;
+      document.getElementById('max').textContent = MAX_ERROS;
+ 
+      const fim = venceu(estado) || perdeu(estado);
+      const msg = document.getElementById('mensagem');
+      if (venceu(estado)) {
+        msg.textContent = 'Você venceu!';
+        // Encontro 15: é AQUI que o app vai avisar "vitória" para somar pontos.
+      } else if (perdeu(estado)) {
+        msg.textContent = 'Perdeu. A palavra era ' + estado.palavra;
+      } else {
+        msg.textContent = '';
+      }
+ 
+      // Desabilita a tecla já usada e todas, se o jogo acabou.
+      document.querySelectorAll('#teclado button').forEach(b => {
+        b.disabled = fim || estado.letras.includes(b.textContent);
+      });
+    }
+ 
+    function criarTeclado() {
+      const teclado = document.getElementById('teclado');
+      teclado.replaceChildren();
+      for (const l of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = l;
+        b.addEventListener('click', () => {
+          estado = processarLetra(estado, l);              // 1) regra calcula o novo estado
+          desenhar();                                      // 2) tela se atualiza a partir do estado
+        });
+        teclado.append(b);
+      }
+    }
+ 
+    function iniciar() {
+      estado = novoEstado();
+      criarTeclado();
+      desenhar();
+    }
+ 
+    document.getElementById('novo').addEventListener('click', iniciar);
+    iniciar();
+  </script>
+</body>
+</html>
