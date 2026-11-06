@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.25">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Forca — JogaMente</title>
   <style>
     /*
@@ -11,8 +11,8 @@
       O JavaScript da lógica não deve mexer em estilos diretamente,
       apenas alterar textos, habilitar/desabilitar botões e atualizar a interface.
     */
-    body { font-family: Arial, sans-serif; text-align: center; margin: 2rem; }
-    #palavra { font-size: 2rem; letter-spacing: .4rem; margin: 1rem; }
+    body { font-family: Arial, sans-serif; text-align: center; margin: 4rem; }
+    #palavra { font-size: 4rem; letter-spacing: .4rem; margin: 1rem; }
     #teclado button { margin: 2px; padding: .5rem .7rem; }
     #teclado button:disabled { opacity: .4; }
   </style>
@@ -44,7 +44,7 @@
     const PALAVRAS = ['OPORTUNIDADE', 'DESCONTO', 'RECOMPENSA', 'PONTUACAO', 'DESAFIO'];
 
     // Número máximo de erros antes do jogador perder.
-    const MAX_ERROS = 6;
+    const MAX_ERROS = 7;
  
     // ===== Parte B: ESTADO =====
     // A variável estado guarda o momento atual da partida.
