@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas - Oportuni</title>
+</head>
+<body>
+    <!-- Link para quem navega por teclado ou leitor de tela pular o menu -->
+    <a href="#conteudo">Pular para o conteúdo</a>
+
+    <!-- CABEÇALHO DO SITE:aparece igual em todas as páginas -->
+    <header>
+        <p><a href="index.html">Oportuni</a></p>
+        <!-- aria-label deferenciar este <nav> de outros que a página venha a ter -->
+        <nav aria-label="Principal">
+            <ul>
+                <li><a href="index.html" aria-current="page">Ofertas</a></li>
+                <li><a href="jogos.html">Jogamente</a></li>
+                <li><a href="perfil.html">Meu Perfil</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL: só um <main> por página-->
+    <main id="conteudo">
+        <h1>Ofertas e Oportunidades</h1>
+
+        <!-- Todo o campo de formulário têm <label> ligado pelo for/id-->
+        <form  aria-label="Filtrar Ofertas" action="index.html" method="get">
+            <label for="categoria">Categoria:</label>
+            <select id="categoria" name="categoria">
+                <option value="">Todas</option>
+                <option value="alimentação">Alimentação</option>
+                <option value="beleza">Beleza</option>
+                <option value="lazer">Lazer</option>
+            </select>
+            <button type="submit">Filtrar</button>
+        </form>
+
+        <section aria-labelledby="título-lista">
+            <h2 id="título-lista">Disponíveis agora</h2>
+
+            <!-- Lista de cards: uma <ul> com um <article> em cada <li>.
+                <aricle> = bloco que faria sentido sozinho (uma oferta). -->
+            <ul>
+                <li>
+                    <article>
+                        <img src="https://receitadaboa.com.br/wp-content/uploads/2024/07/Imagem-ilustrativa-de-pao-de-queijo-1-1.webp" alt="Café c/ pão de queijo" width="320" height="180">
+                        <h3><a href="oferta.html?id=1">Café com pão de queijo</a></h3>
+                        <p>Padaria Central  - Alimentação</p>
+                        <!-- <s> marca o preço antigo; as palavras "De" e "por" garantem que o leitor de tela interprete corretamente -->
+                        <p> De <s>R$ 20,00</s> por <strong>R$ 5,00</strong></p>
+                        <p><span>Útlmima hora</span> - Válido até <time datetime="2026-11-10T18:00">Hoje, 18:00</time></p>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <img src="img/placeholder.svg" alt="Corte de cabelo" width="320" height="180">
+                        <h3><a href="oferta.html?id=2">Corte de cabelo</a></h3>
+                        <p>Barbearia do Zé  - Beleza</p>
+                        <p> De <s>R$ 50,00</s> por <strong>R$ 25,00</strong></p>
+                        <p><span>Última hora</span> - Válido até <time datetime="2026-11-10T18:00">Hoje, 18:00</time></p>
+                    </article>
+                </li>
+                                <li>
+                    <article>
+                        <img src="img/placeholder.svg" alt="Pistas de Boliche" width="320" height="180">
+                        <h3><a href="oferta.html?id=3">Pistas de Boliche</a></h3>
+                        <p>Boliche Strike - Lazer</p>
+                        <p> De <s>R$ 40,00</s> por <strong>R$ 24,00</strong></p>
+                        <p><span>Última hora</span> - Válido até <time datetime="2026-11-10T18:00">Hoje, 18:00</time></p>
+                    </article>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p><small>Projeto didático da UC 13 - Senac RS Dados fictícios</small><br>&copy;Todos os direitos reservados.</p>
+    </footer>
+    
+</body>
+</html>
