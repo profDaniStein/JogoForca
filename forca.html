@@ -44,7 +44,7 @@
     const PALAVRAS = ['OPORTUNIDADE', 'DESCONTO', 'RECOMPENSA', 'PONTUACAO', 'DESAFIO'];
 
     // Número máximo de erros antes do jogador perder.
-    const MAX_ERROS = 7;
+    const MAX_ERROS = 6;
  
     // ===== Parte B: ESTADO =====
     // A variável estado guarda o momento atual da partida.
@@ -69,6 +69,7 @@
 
       // Verifica se a letra existe na palavra secreta.
       const errou = !est.palavra.includes(letra);
+      const acertou = est.palavra.includes(letra);
 
       return {
         palavra: est.palavra,
@@ -162,4 +163,7 @@
     iniciar();
   </script>
 </body>
+<footer>
+  <p>&copy; 2026 Jogo da Forca. Todos os direitos reservados.</p>
+</footer>
 </html>
